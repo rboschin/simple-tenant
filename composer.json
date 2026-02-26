@@ -1,0 +1,53 @@
+{
+    "name": "rboschin/simple-tenant",
+    "description": "Multi-tenant package for Laravel with domain, path and single-tenant resolution.",
+    "keywords": [
+        "laravel",
+        "multi-tenancy",
+        "multitenancy",
+        "tenant",
+        "domain",
+        "subdomain"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roberto Boschin",
+            "email": "rboschin@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/database": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/http": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "illuminate/routing": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "ramsey/uuid": "^4.7"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^2.0|^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rboschin\\SimpleTenant\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rboschin\\SimpleTenant\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rboschin\\SimpleTenant\\SimpleTenantServiceProvider"
+            ],
+            "aliases": {
+                "SimpleTenant": "Rboschin\\SimpleTenant\\Facades\\SimpleTenant"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
