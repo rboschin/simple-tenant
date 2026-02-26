@@ -36,7 +36,7 @@ To use the package during development or from a local folder, add the following 
         }
     ],
     "require": {
-        "rboschin/simple-tenant": "*"
+        "rboschin/simple-tenant": "dev-main"
     }
 }
 ```
