@@ -30,6 +30,7 @@ class SimpleTenantServiceProvider extends ServiceProvider
     {
         $this->publishConfig();
         $this->publishMigrations();
+        $this->publishSeeders();
         $this->registerMiddlewareAliases();
         $this->registerPathFallbackRoute();
     }
@@ -41,7 +42,7 @@ class SimpleTenantServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/simpletenant.php' => config_path('simpletenant.php'),
-        ], 'simpletenant-config');
+        ], ['simpletenant-config', 'simpletenant-all']);
     }
 
     /**
@@ -52,15 +53,25 @@ class SimpleTenantServiceProvider extends ServiceProvider
         // Migrations base (tenants, tenant_domains, tenant_paths)
         $this->publishes([
             __DIR__ . '/../database/migrations/' => database_path('migrations'),
-        ], 'simpletenant-migrations');
+        ], ['simpletenant-migrations', 'simpletenant-all']);
 
         // Stub migrations (aggiunta tenant_uuid a tabelle esistenti)
         $this->publishes([
             __DIR__ . '/../database/stubs/' => database_path('migrations'),
-        ], 'simpletenant-stubs');
+        ], ['simpletenant-stubs', 'simpletenant-all']);
 
         // Carica automaticamente le migrations base del package
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+    }
+
+    /**
+     * Pubblica i seeders.
+     */
+    protected function publishSeeders(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../database/seeders/' => database_path('seeders'),
+        ], ['simpletenant-seeders', 'simpletenant-all']);
     }
 
     /**

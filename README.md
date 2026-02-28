@@ -51,6 +51,14 @@ composer update
 
 ### 1. Publish Configuration and Migrations
 
+You can publish all package assets at once:
+
+```bash
+php artisan vendor:publish --tag=simpletenant-all
+```
+
+Or publish them individually:
+
 ```bash
 # Publish config file (config/simpletenant.php)
 php artisan vendor:publish --tag=simpletenant-config
@@ -58,8 +66,11 @@ php artisan vendor:publish --tag=simpletenant-config
 # Publish core migrations (tenants, domains, paths)
 php artisan vendor:publish --tag=simpletenant-migrations
 
-# Publish optional stubs to add tenant_uuid to standard Laravel tables (users, jobs, etc.)
+# Publish migrations to add tenant_uuid to standard Laravel tables (users, jobs, etc.)
 php artisan vendor:publish --tag=simpletenant-stubs
+
+# Publish seeders
+php artisan vendor:publish --tag=simpletenant-seeders
 ```
 
 ### 2. Run Migrations
@@ -70,7 +81,13 @@ php artisan migrate
 
 ### 3. Seeding (Optional)
 
-You can use the provided seeder to quickly set up a tenant and a test user. Copy the `TenantSeeder.php` from the package's `database/seeders` folder to your application's `database/seeders` directory.
+You can use the provided seeder to quickly set up a tenant and a test user. First, publish the seeder to your application:
+
+```bash
+php artisan vendor:publish --tag=simpletenant-seeders
+```
+
+Then run the seeder:
 
 ```bash
 php artisan db:seed --class=TenantSeeder

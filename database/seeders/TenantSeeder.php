@@ -43,6 +43,7 @@ class TenantSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
             'tenant_uuid' => $tenant->uuid,
+            'remember_token' => Str::random(10),
         ]);
 
         $this->command->info('Tenant "ACME Corporation" created with path "/acme" and user "mario@acme.example.com".');
