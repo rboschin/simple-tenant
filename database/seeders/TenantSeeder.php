@@ -21,18 +21,22 @@ class TenantSeeder extends Seeder
             'name' => 'ACME Corporation',
             'slug' => 'acme-corp',
             'email' => 'admin@acme.example.com',
+            'path' => 'acme',
+            'domain' => '',
             'is_active' => true,
+            'lang' => 'it',
             'metadata' => [
                 'plan' => 'premium',
                 'custom_theme' => 'dark',
+                'logo' => '',
             ],
         ]);
 
         // 2. Create the Tenant Path (for path-based identification)
-        TenantPath::create([
-            'tenant_uuid' => $tenant->uuid,
-            'path' => 'acme', // URL will be: domain.com/acme/...
-        ]);
+        // TenantPath::create([
+        //     'tenant_uuid' => $tenant->uuid,
+        //     'path' => 'acme', // URL will be: domain.com/acme/...
+        // ]);
 
         // 3. Create the Tenant User
         // Note: This assumes the User model uses the BelongsToTenant trait

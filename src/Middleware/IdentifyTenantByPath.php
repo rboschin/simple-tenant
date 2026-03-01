@@ -35,18 +35,13 @@ class IdentifyTenantByPath
 
         $pathSegment = $request->route('tenantPath');
 
-        if (!$pathSegment) {
-            throw new TenantNotFoundException();
+        if ($pathSegment) {
+            $tenant = $this->pathResolver->resolve($pathSegment);
+            if ($tenant) {
+                // Salva il tenant nel contesto (sessione)
+                $this->context->set($tenant);
+            }
         }
-
-        $tenant = $this->pathResolver->resolve($pathSegment);
-
-        if (!$tenant) {
-            throw new TenantNotFoundException();
-        }
-
-        // Salva il tenant nel contesto (sessione)
-        $this->context->set($tenant);
 
         return $next($request);
     }

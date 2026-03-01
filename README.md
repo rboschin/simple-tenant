@@ -49,69 +49,43 @@ composer update
 
 ## Setup
 
-### 1. Publish Configuration and Migrations
+SimpleTenant is designed to work out-of-the-box with minimal configuration.
 
-You can publish all package assets at once:
+### 1. Automatic Configuration
+
+When you install the package, the following are handled automatically via the Service Provider:
+
+- **Migrations**: Core tables (`tenants`, `tenant_domains`, `tenant_paths`) are automatically loaded. Just run `php artisan migrate`.
+- **Middleware**: The `IdentifyTenant` middleware is automatically pushed to the `web` middleware group. No manual registration is required.
+- **Config**: Default configuration is merged automatically.
+
+### 2. Publishing Seeders (Recommended)
+
+To set up your initial tenant data, you only need to run one command to publish the seeders:
 
 ```bash
-php artisan vendor:publish --tag=simpletenant-all
+php artisan simpletenant:publish-seeds
 ```
 
-Or publish them individually:
+This will create `database/seeders/TenantSeeder.php` in your application. You can then run:
 
 ```bash
-# Publish config file (config/simpletenant.php)
+php artisan db:seed --class=Database\\Seeders\\TenantSeeder
+```
+
+### 3. Manual Assets (Optional)
+
+If you wish to customize the configuration or migrations, you can still publish them:
+
+```bash
+# To customize configuration (config/simpletenant.php)
 php artisan vendor:publish --tag=simpletenant-config
 
-# Publish core migrations (tenants, domains, paths)
+# To customize core migrations
 php artisan vendor:publish --tag=simpletenant-migrations
-
-# Publish migrations to add tenant_uuid to standard Laravel tables (users, jobs, etc.)
-php artisan vendor:publish --tag=simpletenant-stubs
-
-# Publish seeders
-php artisan vendor:publish --tag=simpletenant-seeders
 ```
 
-### 2. Run Migrations
-
-```bash
-php artisan migrate
-```
-
-### 3. Seeding (Optional)
-
-You can use the provided seeder to quickly set up a tenant and a test user. First, publish the seeder to your application:
-
-```bash
-php artisan vendor:publish --tag=simpletenant-seeders
-```
-
-Then run the seeder:
-
-```bash
-php artisan db:seed --class=TenantSeeder
-```
-
-The seeder creates:
-- A tenant named **ACME Corporation** with path `acme`.
-- A user `mario@acme.example.com` with password `password`.
-
-### 4. Register Middleware
-
-You can register the middleware in your `app/Http/Kernel.php` or `bootstrap/app.php` (depending on your Laravel version).
-
-#### Domain/Single-Tenant Identification
-Apply the `simpletenant.identify` middleware to routes that require tenant resolution:
-
-```php
-Route::middleware(['web', 'simpletenant.identify'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index']);
-});
-```
-
-#### Path Identification
-The package automatically registers a catch-all route `/{tenantPath}` at the lowest priority. To customize its behavior or apply it to specific groups, use the `simpletenant.path` middleware.
+---
 
 ## Usage
 

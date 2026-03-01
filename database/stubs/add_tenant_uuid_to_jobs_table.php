@@ -9,10 +9,6 @@ return new class extends Migration {
     {
         Schema::table('jobs', function (Blueprint $table) {
             $table->uuid('tenant_uuid')->nullable()->after('id');
-            $table->foreign('tenant_uuid')
-                ->references('uuid')
-                ->on('tenants')
-                ->nullOnDelete();
             $table->index('tenant_uuid');
         });
     }
@@ -20,7 +16,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->dropForeign(['tenant_uuid']);
+            // $table->dropForeign(['tenant_uuid']);
             $table->dropIndex(['tenant_uuid']);
             $table->dropColumn('tenant_uuid');
         });

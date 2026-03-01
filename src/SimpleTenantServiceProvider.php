@@ -28,10 +28,17 @@ class SimpleTenantServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Console\PublishSeedsCommand::class ,
+            ]);
+        }
+
         $this->publishConfig();
         $this->publishMigrations();
         $this->publishSeeders();
         $this->registerMiddlewareAliases();
+        $this->registerAutomaticMiddleware();
         $this->registerPathFallbackRoute();
     }
 
@@ -51,14 +58,16 @@ class SimpleTenantServiceProvider extends ServiceProvider
     protected function publishMigrations(): void
     {
         // Migrations base (tenants, tenant_domains, tenant_paths)
+        // Non le includiamo in 'simpletenant-all' perché sono caricate automaticamente via loadMigrationsFrom
         $this->publishes([
             __DIR__ . '/../database/migrations/' => database_path('migrations'),
-        ], ['simpletenant-migrations', 'simpletenant-all']);
+        ], ['simpletenant-migrations']);
 
-        // Stub migrations (aggiunta tenant_uuid a tabelle esistenti)
+        // Extra migrations (aggiunta tenant_uuid a tabelle esistenti)
+        // Gestite programmaticamente dal comando simpletenant:install per aggiungere i timestamp
         $this->publishes([
             __DIR__ . '/../database/stubs/' => database_path('migrations'),
-        ], ['simpletenant-stubs', 'simpletenant-all']);
+        ], ['simpletenant-migrations-extra']);
 
         // Carica automaticamente le migrations base del package
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
@@ -87,6 +96,16 @@ class SimpleTenantServiceProvider extends ServiceProvider
     }
 
     /**
+     * Registra automaticamente il middleware nel gruppo 'web'.
+     */
+    protected function registerAutomaticMiddleware(): void
+    {
+        /** @var Router $router */
+        $router = $this->app->make(Router::class);
+        $router->pushMiddlewareToGroup('web', IdentifyTenant::class);
+    }
+
+    /**
      * Registra la route catch-all per la risoluzione via path.
      *
      * Questa route viene registrata DOPO il boot dell'applicazione,
@@ -105,14 +124,13 @@ class SimpleTenantServiceProvider extends ServiceProvider
                 ->any('/{tenantPath}', function () {
                 $context = app(TenantContext::class);
 
+                // C'e' il tenant
                 if ($context->check()) {
-                    return response()->json([
-                    'tenant' => $context->get(),
-                    'message' => 'Tenant identified via path.',
-                    ]);
+                // die('ciao');
+                // return redirect('/');
                 }
 
-                abort(404);
+            // abort(404);
             }
             )
                 ->where('tenantPath', '[a-zA-Z0-9\-\_]+')

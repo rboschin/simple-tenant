@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('tenant_paths', function (Blueprint $table) {
+        Schema::create('st_tenant_paths', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->uuid('tenant_uuid');
@@ -25,6 +25,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('tenant_paths');
+        Schema::dropIfExists('st_tenant_paths');
     }
 };

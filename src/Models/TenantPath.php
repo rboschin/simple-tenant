@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 
 class TenantPath extends Model
 {
-    protected $table = 'tenant_paths';
+    protected $table = 'st_tenant_paths';
 
     protected $fillable = [
         'uuid',

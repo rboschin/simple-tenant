@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Rboschin\SimpleTenant\Resolvers;
 
 use Rboschin\SimpleTenant\Models\Tenant;
-use Rboschin\SimpleTenant\Models\TenantPath;
+
+// use Rboschin\SimpleTenant\Models\TenantPath;
 
 class PathResolver
 {
@@ -22,13 +23,7 @@ class PathResolver
             return null;
         }
 
-        $tenantPath = TenantPath::where('path', $pathSegment)->first();
-
-        if (!$tenantPath) {
-            return null;
-        }
-
-        $tenant = $tenantPath->tenant;
+        $tenant = Tenant::where('path', $pathSegment)->first();
 
         if ($tenant && $tenant->is_active) {
             return $tenant;

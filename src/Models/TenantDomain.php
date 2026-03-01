@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 
 class TenantDomain extends Model
 {
-    protected $table = 'tenant_domains';
+    protected $table = 'st_tenant_domains';
 
     protected $fillable = [
         'uuid',

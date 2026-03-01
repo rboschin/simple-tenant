@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rboschin\SimpleTenant\Resolvers;
 
 use Rboschin\SimpleTenant\Models\Tenant;
-use Rboschin\SimpleTenant\Models\TenantDomain;
+// use Rboschin\SimpleTenant\Models\TenantDomain;
 use Illuminate\Support\Str;
 
 class DomainResolver
@@ -20,13 +20,7 @@ class DomainResolver
     {
         $domain = $this->normalizeDomain($host);
 
-        $tenantDomain = TenantDomain::where('domain', $domain)->first();
-
-        if (!$tenantDomain) {
-            return null;
-        }
-
-        $tenant = $tenantDomain->tenant;
+        $tenant = Tenant::where('domain', $domain)->first();
 
         if ($tenant && $tenant->is_active) {
             return $tenant;

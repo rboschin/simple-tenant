@@ -15,13 +15,16 @@ class Tenant extends Model implements IsTenant
 {
     use SoftDeletes;
 
-    protected $table = 'tenants';
+    protected $table = 'st_tenants';
 
     protected $fillable = [
         'uuid',
         'name',
         'slug',
         'email',
+        'path',
+        'domain',
+        'lang',
         'metadata',
         'is_active',
     ];
@@ -59,18 +62,18 @@ class Tenant extends Model implements IsTenant
     /**
      * Domini associati a questo tenant.
      */
-    public function domains(): HasMany
-    {
-        return $this->hasMany(TenantDomain::class , 'tenant_uuid', 'uuid');
-    }
+    // public function domains(): HasMany
+    // {
+    //     return $this->hasMany(TenantDomain::class , 'tenant_uuid', 'uuid');
+    // }
 
     /**
      * Path associati a questo tenant.
      */
-    public function paths(): HasMany
-    {
-        return $this->hasMany(TenantPath::class , 'tenant_uuid', 'uuid');
-    }
+    // public function paths(): HasMany
+    // {
+    //     return $this->hasMany(TenantPath::class , 'tenant_uuid', 'uuid');
+    // }
 
     /**
      * Restituisce i dati del tenant per la sessione.
@@ -81,6 +84,8 @@ class Tenant extends Model implements IsTenant
             'uuid' => $this->uuid,
             'name' => $this->name,
             'slug' => $this->slug,
+            'path' => $this->path,
+            'domain' => $this->domain,
             'email' => $this->email,
             'metadata' => $this->metadata,
         ];

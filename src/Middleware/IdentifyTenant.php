@@ -29,14 +29,20 @@ class IdentifyTenant
      *
      * Ordine di risoluzione:
      * 1. Single-tenant mode (se configurato in .env)
-     * 2. Domain-based resolution (dominio / sottodominio)
-     * 3. 404 se non trovato
+     * 2. Request Data resolution (Form field, GET param, etc.)
+     * 3. Domain-based resolution (dominio / sottodominio)
+     * 4. 404 se non trovato
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // If authenticated continue
+        if (\Auth::check()) {
+            return $next($request);
+        }
+        dd($request->route('tenantPath'));
         // Se il tenant è già identificato in sessione, usalo
         if ($this->context->check()) {
-            return $next($request);
+            return redirect()->route('login');
         }
 
         $tenant = null;
@@ -64,13 +70,32 @@ class IdentifyTenant
             }
         }
 
+        $pathSegment = $request->route('tenantPath');
+
+        if ($pathSegment) {
+            $tenant = $this->pathResolver->resolve($pathSegment);
+            if ($tenant) {
+                // Salva il tenant nel contesto (sessione)
+                $this->context->set($tenant);
+            }
+        }
+
+
         if (!$tenant) {
-            throw new TenantNotFoundException();
+            $host = $request->getHost();
+            $centralDomains = config('simpletenant.central_domains', []);
+
+            if (in_array($host, $centralDomains)) {
+                return $next($request);
+            }
+
+            #            throw new TenantNotFoundException();
+            return $next($request);
         }
 
         // Salva il tenant nel contesto (sessione)
         $this->context->set($tenant);
 
-        return $next($request);
+        return redirect()->route('login');
     }
 }
