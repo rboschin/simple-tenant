@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Rboschin\SimpleTenant;
 
 use Rboschin\SimpleTenant\Middleware\IdentifyTenant;
-use Rboschin\SimpleTenant\Middleware\IdentifyTenantByPath;
+// use Rboschin\SimpleTenant\Middleware\IdentifyTenantByPath;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -38,7 +38,6 @@ class SimpleTenantServiceProvider extends ServiceProvider
         $this->publishMigrations();
         $this->publishSeeders();
         $this->registerMiddlewareAliases();
-        $this->registerAutomaticMiddleware();
         $this->registerPathFallbackRoute();
     }
 
@@ -92,17 +91,7 @@ class SimpleTenantServiceProvider extends ServiceProvider
         $router = $this->app->make(Router::class);
 
         $router->aliasMiddleware('simpletenant.identify', IdentifyTenant::class);
-        $router->aliasMiddleware('simpletenant.path', IdentifyTenantByPath::class);
-    }
-
-    /**
-     * Registra automaticamente il middleware nel gruppo 'web'.
-     */
-    protected function registerAutomaticMiddleware(): void
-    {
-        /** @var Router $router */
-        $router = $this->app->make(Router::class);
-        $router->pushMiddlewareToGroup('web', IdentifyTenant::class);
+        // $router->aliasMiddleware('simpletenant.path', IdentifyTenantByPath::class);
     }
 
     /**
@@ -118,23 +107,15 @@ class SimpleTenantServiceProvider extends ServiceProvider
             return;
         }
 
-        // Registra la route catch-all dopo che tutte le route dell'app sono caricate
+        // Route::fallback(fn () => null)->middleware(FallbackMiddleware::class);
         $this->app->booted(function () {
-            Route::middleware(['web', 'simpletenant.path'])
-                ->any('/{tenantPath}', function () {
-                $context = app(TenantContext::class);
-
-                // C'e' il tenant
-                if ($context->check()) {
-                // die('ciao');
-                // return redirect('/');
-                }
-
-            // abort(404);
-            }
-            )
-                ->where('tenantPath', '[a-zA-Z0-9\-\_]+')
-                ->name('simpletenant.path.fallback');
+            // Route::fallback(function () {
+            //     dd('dfsdf');
+            //     abort(404);
+            // })
+            Route::fallback(fn () => null)
+                ->middleware(IdentifyTenant::class)
+                ->name('simpletenant.fallback');
         });
     }
 }

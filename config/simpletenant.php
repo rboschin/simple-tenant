@@ -90,7 +90,4 @@ return [
      */
     'identification_request_key' => 'tenant_path',
 
-    'login_route' => '/login',
-    'dashboard_route' => '/dashboard',
-
 ];
